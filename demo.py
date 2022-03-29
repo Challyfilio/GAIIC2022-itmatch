@@ -43,7 +43,7 @@ def load_model(checkpoint_path):
     
     return model.eval()
 
-checkpoint_path = "./logs/demo/checkpoints/epoch_10.pt"
+checkpoint_path = "./logs/demo/checkpoints/epoch_60.pt"
 test_data = "./src/data/preliminary_testA.txt"
 attr_dict_file = "./src/data/attr_to_attrvals.json"
 out_file = "result.txt"

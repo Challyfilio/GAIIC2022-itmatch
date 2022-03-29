@@ -9,7 +9,7 @@ import torch.nn as nn
 from torch.cuda.amp import autocast
 import torch.distributed as dist
 
-from .zero_shot import zero_shot_eval
+from zero_shot import zero_shot_eval
 from clip.clip import _transform, load, tokenize
 
 import sys

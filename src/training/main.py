@@ -16,11 +16,11 @@ from torch.cuda.amp import GradScaler
 
 from clip.clip import _transform, load
 from clip.model import convert_weights, CLIP
-from training.train import train, evaluate
-from training.data import get_data
-from training.params import parse_args
-from training.logger import setup_primary_logging, setup_worker_logging
-from training.scheduler import cosine_lr
+from train import train, evaluate
+from data import get_data
+from params import parse_args
+from logger import setup_primary_logging, setup_worker_logging
+from scheduler import cosine_lr
 
 # Used by https://github.com/openai/CLIP/issues/83 but not below.
 # Keeping it incase needed.
