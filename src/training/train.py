@@ -9,7 +9,7 @@ import torch.nn as nn
 from torch.cuda.amp import autocast
 import torch.distributed as dist
 
-from zero_shot import zero_shot_eval
+from src.training.zero_shot import zero_shot_eval
 from clip.clip import _transform, load, tokenize
 
 import sys
@@ -18,8 +18,10 @@ import wandb
 
 import logging
 
+
 def is_master(args):
     return (not args.distributed) or args.gpu == 0
+
 
 def get_loss(model, images, texts, loss_img, loss_txt, args):
     image_features, text_features, logit_scale = model(images, texts)
@@ -41,12 +43,12 @@ def get_loss(model, images, texts, loss_img, loss_txt, args):
         all_image_features = torch.cat(
             [image_features]
             + gathered_image_features[:rank]
-            + gathered_image_features[rank + 1 :]
+            + gathered_image_features[rank + 1:]
         )
         all_text_features = torch.cat(
             [text_features]
             + gathered_text_features[:rank]
-            + gathered_text_features[rank + 1 :]
+            + gathered_text_features[rank + 1:]
         )
 
         # this is needed to send gradients back everywhere.
@@ -62,18 +64,18 @@ def get_loss(model, images, texts, loss_img, loss_txt, args):
         ground_truth = ground_truth.cuda(args.gpu, non_blocking=True)
 
     total_loss = (
-        loss_img(logits_per_image, ground_truth)
-        + loss_txt(logits_per_text, ground_truth)
-    ) / 2
+                         loss_img(logits_per_image, ground_truth)
+                         + loss_txt(logits_per_text, ground_truth)
+                 ) / 2
     return total_loss
 
 
 def train(model, data, epoch, optimizer, scaler, scheduler, args, tb_writer=None):
     os.environ["WDS_EPOCH"] = str(epoch)
-    
+
     model.train()
 
-    dataloader, sampler = data['train'].dataloader,  data['train'].sampler
+    dataloader, sampler = data['train'].dataloader, data['train'].sampler
 
     loss_img = nn.CrossEntropyLoss()
     loss_txt = nn.CrossEntropyLoss()
@@ -137,7 +139,7 @@ def train(model, data, epoch, optimizer, scaler, scheduler, args, tb_writer=None
                 "loss": total_loss.item(),
                 "data_time": data_time,
                 "batch_time": batch_time,
-                "scale":  m.logit_scale.data.item(),
+                "scale": m.logit_scale.data.item(),
                 "lr": optimizer.param_groups[0]["lr"]
             }
 
@@ -152,7 +154,7 @@ def train(model, data, epoch, optimizer, scaler, scheduler, args, tb_writer=None
 def evaluate(model, data, epoch, args, tb_writer=None, steps=None):
     if not is_master(args):
         return
-    
+
     model.eval()
 
     zero_shot_metrics = zero_shot_eval(model, data, epoch, args)
@@ -187,9 +189,9 @@ def evaluate(model, data, epoch, args, tb_writer=None, steps=None):
             if args.gpu is not None:
                 ground_truth = ground_truth.cuda(args.gpu, non_blocking=True)
             total_loss = (
-                loss_img(logits_per_image, ground_truth)
-                + loss_txt(logits_per_text, ground_truth)
-            ) / 2
+                                 loss_img(logits_per_image, ground_truth)
+                                 + loss_txt(logits_per_text, ground_truth)
+                         ) / 2
 
             batch_size = len(images)
             cumulative_loss += total_loss * batch_size

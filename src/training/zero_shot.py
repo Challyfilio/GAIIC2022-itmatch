@@ -1,16 +1,17 @@
 from tqdm import tqdm
 import torch
 import clip.clip as clip
-from imagenet_zeroshot_data import imagenet_classnames, openai_imagenet_template
+from src.training.imagenet_zeroshot_data import imagenet_classnames, openai_imagenet_template
 
 import logging
+
 
 def zero_shot_classifier(model, classnames, templates, args):
     with torch.no_grad():
         zeroshot_weights = []
         for classname in tqdm(classnames):
-            texts = [template(classname) for template in templates] #format with class
-            texts = clip.tokenize(texts).to(args.gpu) #tokenize
+            texts = [template(classname) for template in templates]  # format with class
+            texts = clip.tokenize(texts).to(args.gpu)  # tokenize
             if args.distributed:
                 class_embeddings = model.module.encode_text(texts)
             elif args.dp:
@@ -29,6 +30,7 @@ def accuracy(output, target, topk=(1,)):
     pred = output.topk(max(topk), 1, True, True)[1].t()
     correct = pred.eq(target.view(1, -1).expand_as(pred))
     return [float(correct[:k].reshape(-1).float().sum(0, keepdim=True).cpu().numpy()) for k in topk]
+
 
 def run(model, classifier, dataloader, args):
     with torch.no_grad():
@@ -57,8 +59,8 @@ def run(model, classifier, dataloader, args):
     top5 = (top5 / n)
     return top1, top5
 
-def zero_shot_eval(model, data, epoch, args):
 
+def zero_shot_eval(model, data, epoch, args):
     if 'imagenet-val' not in data and 'imagenet-v2' not in data:
         return {}
 
@@ -83,7 +85,6 @@ def zero_shot_eval(model, data, epoch, args):
         top1, top5 = run(model, classifier, data['imagenet-v2'].dataloader, args)
         results['imagenetv2-zeroshot-val-top1'] = top1
         results['imagenetv2-zeroshot-val-top5'] = top5
-
 
     logging.info('Finished zero-shot imagenet.')
 
