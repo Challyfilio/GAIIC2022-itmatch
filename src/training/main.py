@@ -47,7 +47,7 @@ def main_worker(gpu, ngpus_per_node, log_queue, args):
                 val = getattr(args, name)
                 logging.info(f"  {name}: {val}")
                 f.write(f"{name}: {val}\n")
-            
+
     if args.distributed:
         dist.init_process_group(
             backend=args.dist_backend,
@@ -55,7 +55,7 @@ def main_worker(gpu, ngpus_per_node, log_queue, args):
             world_size=args.world_size,
             rank=args.rank,
         )
-    
+
     if args.dp:
         args.batch_size *= args.world_size
 
@@ -282,7 +282,7 @@ def main():
     for dirname in [args.tensorboard_path, args.checkpoint_path]:
         if dirname:
             os.makedirs(dirname, exist_ok=True)
-    
+
 
     # Set multiprocessing type to spawn.
     # This is important for logging to work with multiprocessing.
