@@ -113,7 +113,7 @@ def parse_args():
     parser.add_argument(
         "--save-most-recent",
         action="store_true",
-        default=False,
+        default=True,
         help="Always save the most recent model trained to epoch_latest.pt.",
     )
     parser.add_argument(
