@@ -16,7 +16,7 @@ def setup_primary_logging(log_file, level):
     stream_handler = logging.StreamHandler()
 
     formatter = logging.Formatter(
-        '%(asctime)s | %(levelname)s | %(message)s', 
+        '%(asctime)s | %(levelname)s | %(message)s',
         datefmt='%Y-%m-%d,%H:%M:%S')
 
     file_handler.setFormatter(formatter)
@@ -68,6 +68,7 @@ def fake_worker(rank: int, world_size: int, log_queue: Queue):
         world_size=world_size,
         rank=rank,
     )
+
 
 if __name__ == "__main__":
     # Set multiprocessing type to spawn
