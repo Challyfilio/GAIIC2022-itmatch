@@ -8,6 +8,7 @@ python -u src/training/main.py \
   --train-data="src/data/train_coarse.txt,src/data/train_fine.txt.00" \
   --val-data="src/data/train_fine.txt.01" \
   --dataset-type="json" \
+  --model="ViT-B/32" \
   --warmup 1000 \
   --batch-size=128 \
   --lr=1e-4 \
