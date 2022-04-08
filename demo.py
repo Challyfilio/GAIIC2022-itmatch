@@ -83,9 +83,7 @@ with open(test_data, 'r') as f:
         ret = {
             "img_name": data["img_name"],
             "match": {
-                a: int(s > 0.4 if a == '图文' else 0.04) for a, s in zip(data['query'], similarities),
-                b: int(s > 0.4 if b == '图文' else 0.04) for b, s in zip(data['query'], similarities)
-
+                a: int(s > 0.5 if a == '图文' else 0.05) for a, s in zip(data['query'], similarities)
             }
         }
         rets.append(json.dumps(ret, ensure_ascii=False) + '\n')
