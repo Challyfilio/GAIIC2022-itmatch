@@ -99,7 +99,7 @@ def parse_args():
         type=int,
         default=None,
         help="Specify a single GPU to run the code on for debugging."
-             "Leave at None to use all available GPUs.",
+        "Leave at None to use all available GPUs.",
     )
     parser.add_argument(
         "--skip-scheduler",
@@ -113,7 +113,7 @@ def parse_args():
     parser.add_argument(
         "--save-most-recent",
         action="store_true",
-        default=True,
+        default=False,
         help="Always save the most recent model trained to epoch_latest.pt.",
     )
     parser.add_argument(

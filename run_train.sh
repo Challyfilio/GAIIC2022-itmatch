@@ -5,8 +5,8 @@ echo '* * * * * * *'
 
 python -u src/training/main.py \
   --save-frequency 1 \
-  --train-data="src/data/train_coarse.txt,src/data/train_fine.txt.00" \
-  --val-data="src/data/train_fine.txt.01" \
+  --train-data="data/train_coarse.txt,data/train_fine.txt.00" \
+  --val-data="data/train_fine.txt.01" \
   --dataset-type="json" \
   --model="ViT-B/32" \
   --warmup 1000 \
@@ -17,4 +17,4 @@ python -u src/training/main.py \
   --workers=4 \
   --dp \
   --multigpu 0 \
-  --name "demo"
+  --name "demo1"

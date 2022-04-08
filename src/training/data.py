@@ -28,7 +28,6 @@ import webdataset as wds
 
 from clip.clip import tokenize
 
-
 class CsvDataset(Dataset):
     def __init__(self, input_filename, transforms, img_key, caption_key, sep="\t"):
         logging.debug(f'Loading csv data from {input_filename}.')
@@ -47,11 +46,10 @@ class CsvDataset(Dataset):
         texts = tokenize([str(self.captions[idx])])[0]
         return images, texts
 
-
 class JsonDataset(Dataset):
     def __init__(self, input_filename, is_train):
         logging.debug(f'Loading json data from {input_filename}.')
-
+        
         self.is_train = is_train
         self.items = []
         for file in input_filename.split(','):
@@ -60,12 +58,12 @@ class JsonDataset(Dataset):
                     item = json.loads(line)
                     if item['match']['图文']:
                         self.items.append(item)
-
+                
         logging.debug('Done loading data.')
-
+    
     def __len__(self):
         return len(self.items)
-
+    
     def __getitem__(self, idx):
         image = np.array(self.items[idx]['feature']).astype(np.float32)
         title = self.items[idx]['title']
@@ -77,10 +75,8 @@ class DataInfo:
     dataloader: DataLoader
     sampler: DistributedSampler
 
-
 def preprocess_txt(text):
     return tokenize([str(text)])[0]
-
 
 def get_dataset_size(shards):
     shards_list = list(braceexpand.braceexpand(shards))
@@ -92,7 +88,6 @@ def get_dataset_size(shards):
     num_shards = len(shards_list)
     return total_size, num_shards
 
-
 def get_imagenet(args, preprocess_fns, split):
     assert split in ["train", "val", "v2"]
     is_train = split == "train"
@@ -103,7 +98,7 @@ def get_imagenet(args, preprocess_fns, split):
         dataset = ImageNetV2Dataset(location=args.imagenet_v2, transform=preprocess_val)
     else:
         if is_train:
-            data_path = args.imagenet_train
+            data_path  = args.imagenet_train
             preprocess_fn = preprocess_train
         else:
             data_path = args.imagenet_val
@@ -138,7 +133,6 @@ def get_imagenet(args, preprocess_fns, split):
 
     return DataInfo(dataloader, sampler)
 
-
 def count_samples(dataloader):
     os.environ["WDS_EPOCH"] = "0"
     n_elements, n_batches = 0, 0
@@ -147,7 +141,6 @@ def count_samples(dataloader):
         n_elements += len(images)
         assert len(images) == len(texts)
     return n_elements, n_batches
-
 
 def get_wds_dataset(args, preprocess_img, is_train):
     input_shards = args.train_data if is_train else args.val_data
@@ -169,11 +162,11 @@ def get_wds_dataset(args, preprocess_img, is_train):
     )
     dataset = (
         wds.WebDataset(shardlist)
-            .decode("pil")
-            .rename(image="jpg;png", text="txt")
-            .map_dict(image=preprocess_img, text=preprocess_txt)
-            .to_tuple("image", "text")
-            .batched(args.batch_size, partial=not is_train or not args.distributed)
+        .decode("pil")
+        .rename(image="jpg;png", text="txt")
+        .map_dict(image=preprocess_img, text=preprocess_txt)
+        .to_tuple("image", "text")
+        .batched(args.batch_size, partial=not is_train or not args.distributed)
     )
     dataloader = wds.WebLoader(
         dataset, batch_size=None, shuffle=False, num_workers=args.workers,
@@ -186,7 +179,6 @@ def get_wds_dataset(args, preprocess_img, is_train):
     dataloader.num_samples = num_samples
 
     return DataInfo(dataloader, None)
-
 
 def get_csv_dataset(args, preprocess_fn, is_train):
     input_filename = args.train_data if is_train else args.val_data
@@ -215,14 +207,13 @@ def get_csv_dataset(args, preprocess_fn, is_train):
 
     return DataInfo(dataloader, sampler)
 
-
 def get_json_dataset(args, preprocess_fn, is_train):
     input_filename = args.train_data if is_train else args.val_data
     assert input_filename
     dataset = JsonDataset(
         input_filename,
         is_train
-    )
+        )
     num_samples = len(dataset)
     sampler = DistributedSampler(dataset) if args.distributed and is_train else None
     shuffle = is_train and sampler is None
@@ -240,7 +231,6 @@ def get_json_dataset(args, preprocess_fn, is_train):
     dataloader.num_batches = len(dataloader)
 
     return DataInfo(dataloader, sampler)
-
 
 def get_dataset_fn(data_path, dataset_type):
     if dataset_type == "webdataset":
@@ -260,7 +250,7 @@ def get_dataset_fn(data_path, dataset_type):
                 f"Tried to figure out dataset type, but failed for extention {ext}.")
     else:
         raise ValueError(f"Unsupported dataset type: {dataset_type}")
-
+    
 
 def get_data(args, preprocess_fns):
     preprocess_train, preprocess_val = preprocess_fns

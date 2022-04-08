@@ -47,10 +47,10 @@ def load_model(checkpoint_path):
     return model.eval()
 
 
-checkpoint_path = "./logs/demo2/checkpoints/epoch_1.pt"
-test_data = "./src/data/preliminary_testA.txt"
-attr_dict_file = "./src/data/attr_to_attrvals.json"
-out_file = "result.txt"
+checkpoint_path = "./logs/demo1/checkpoints/epoch_6.pt"
+test_data = "./data/preliminary_testA.txt"
+attr_dict_file = "./data/attr_to_attrvals_new.json"
+out_file = "test_pred_2.txt"
 
 # build model
 model = load_model(checkpoint_path)
@@ -83,7 +83,9 @@ with open(test_data, 'r') as f:
         ret = {
             "img_name": data["img_name"],
             "match": {
-                a: int(s > 0.4 if a == '图文' else 0.04) for a, s in zip(data['query'], similarities)
+                a: int(s > 0.4 if a == '图文' else 0.04) for a, s in zip(data['query'], similarities),
+                b: int(s > 0.4 if b == '图文' else 0.04) for b, s in zip(data['query'], similarities)
+
             }
         }
         rets.append(json.dumps(ret, ensure_ascii=False) + '\n')
