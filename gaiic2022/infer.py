@@ -24,7 +24,7 @@ def predict(text, feature):
 
 if __name__ == "__main__":
     #
-    out_file = 'submit_0407.txt'
+    out_file = 'result.txt'
     with open('../data/word_to_idx_v1.json', 'r') as f:
         word_to_idx = json.load(f)
     embed_num = len(word_to_idx) + 1
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     submit = []
     class_index = []
     model_list = []
-    model = load_model('ckpt_v1/fold_' + str(1) + '_best.pth')
+    model = load_model('ckpt_v1/fold_' + str(5) + '_best.pth')
     #
     Threshold = 0.5
     data_dir = '../data/preliminary_testA.txt'
