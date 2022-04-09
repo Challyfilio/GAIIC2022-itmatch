@@ -22,6 +22,7 @@ from params import parse_args
 from logger import setup_primary_logging, setup_worker_logging
 from scheduler import cosine_lr
 
+
 # Used by https://github.com/openai/CLIP/issues/83 but not below.
 # Keeping it incase needed.
 def convert_models_to_fp32(model):
@@ -30,8 +31,10 @@ def convert_models_to_fp32(model):
         if p.grad:
             p.grad.data = p.grad.data.float()
 
+
 def is_master(args):
     return (not args.distributed) or args.gpu == 0 or args.dp
+
 
 def main_worker(gpu, ngpus_per_node, log_queue, args):
     args.gpu = gpu
@@ -47,7 +50,7 @@ def main_worker(gpu, ngpus_per_node, log_queue, args):
                 val = getattr(args, name)
                 logging.info(f"  {name}: {val}")
                 f.write(f"{name}: {val}\n")
-            
+
     if args.distributed:
         dist.init_process_group(
             backend=args.dist_backend,
@@ -55,7 +58,7 @@ def main_worker(gpu, ngpus_per_node, log_queue, args):
             world_size=args.world_size,
             rank=args.rank,
         )
-    
+
     if args.dp:
         args.batch_size *= args.world_size
 
@@ -74,7 +77,6 @@ def main_worker(gpu, ngpus_per_node, log_queue, args):
         convert_weights(model)
         preprocess_train = None
         preprocess_val = None
-
 
     # See https://discuss.pytorch.org/t/valueerror-attemting-to-unscale-fp16-gradients/81372
     if args.precision == "amp" or args.precision == "fp32" or args.gpu is None:
@@ -103,8 +105,8 @@ def main_worker(gpu, ngpus_per_node, log_queue, args):
 
     data = get_data(args, (preprocess_train, preprocess_val))
 
-    exclude = lambda n : "bn" in n or "ln" in n or "bias" in n or 'logit_scale' in n
-    include = lambda n : not exclude(n)
+    exclude = lambda n: "bn" in n or "ln" in n or "bias" in n or 'logit_scale' in n
+    include = lambda n: not exclude(n)
 
     named_parameters = list(model.named_parameters())
     gain_or_bias_params = [p for n, p in named_parameters if exclude(n) and p.requires_grad]
@@ -157,7 +159,7 @@ def main_worker(gpu, ngpus_per_node, log_queue, args):
     # determine if this worker should save logs and checkpoints.
     # only do so if it is the 0th worker.
     args.save_logs = (args.logs is not None and args.logs != '' and args.logs.lower() != 'none') and (
-        (not args.distributed) or args.gpu == 0
+            (not args.distributed) or args.gpu == 0
     )
     writer = None
     if args.save_logs and args.tensorboard:
@@ -197,7 +199,7 @@ def main_worker(gpu, ngpus_per_node, log_queue, args):
         # Saving checkpoints.
         if args.save_logs and (args.gpu == 0 or (not args.distributed)):
             if (epoch + 1) == args.epochs or (
-                args.save_frequency > 0 and ((epoch + 1) % args.save_frequency) == 0
+                    args.save_frequency > 0 and ((epoch + 1) % args.save_frequency) == 0
             ):
                 torch.save(
                     {
@@ -270,7 +272,7 @@ def main():
         return -1
 
     assert args.precision in ['amp', 'fp16', 'fp32']
-    #assert args.model in ['RN50', 'RN101', 'RN50x4', 'ViT-B/32'] or os.path.exists(args.model)
+    # assert args.model in ['RN50', 'RN101', 'RN50x4', 'ViT-B/32'] or os.path.exists(args.model)
 
     args.ngpus_per_node = torch.cuda.device_count()
 
@@ -282,7 +284,6 @@ def main():
     for dirname in [args.tensorboard_path, args.checkpoint_path]:
         if dirname:
             os.makedirs(dirname, exist_ok=True)
-    
 
     # Set multiprocessing type to spawn.
     # This is important for logging to work with multiprocessing.
