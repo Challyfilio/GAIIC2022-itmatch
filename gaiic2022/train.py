@@ -22,7 +22,7 @@ import json
 import jieba
 
 random.seed(2022)
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+# os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 #
 label_dir = '../data/label_v1.json'
 feature_dir = '../data/feature_imgName.json'
