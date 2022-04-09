@@ -147,6 +147,10 @@ def val_model(model, criterion):
 #
 if __name__ == "__main__":
     #
+    print(torch.cuda.device_count())
+    print(torch.cuda.is_available())
+    # print(device)
+    exit()
     word_to_idx = get_vocab('../data/word_to_idx_v1.json')
     model_save_dir = 'ckpt_v1/'
     print_interval = 100
@@ -156,6 +160,7 @@ if __name__ == "__main__":
     embed_num = len(word_to_idx) + 1
     print("embed_num:", len(word_to_idx) + 1)
     device = torch.device('cuda')
+
     # criterion = torch.nn.BCEWithLogitsLoss()
     criterion = torch.nn.MultiLabelSoftMarginLoss()
     if not os.path.exists(model_save_dir): os.makedirs(model_save_dir)
