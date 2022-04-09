@@ -64,7 +64,7 @@ with open(test_data, 'r') as f:
         data = json.loads(data)
         feature = np.array(data['feature']).astype(np.float32)
         texts = [data['title'] if a == '图文' else match_attrval(data['title'], a, attr_dict) for a in data['query']]
-        features = torch.from_numpy(feature)[None,].repeat(len(texts), 1)
+        features = torch.from_numpy(feature)[None, ].repeat(len(texts), 1)
         tokens = tokenize(texts)
 
         features = features.cuda()
