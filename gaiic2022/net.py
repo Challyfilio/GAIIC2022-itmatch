@@ -18,7 +18,12 @@ class CNN_Text(nn.Module):
         self.dropout = nn.Dropout(dropout)
         #
         self.img_head = nn.Sequential(
-            nn.Linear(2048, 512),
+            nn.Linear(2048, 1024),
+            nn.BatchNorm1d(1024),
+            nn.LeakyReLU(),
+            # nn.Dropout(p = dropout),
+            #
+            nn.Linear(1024, 512),
             nn.BatchNorm1d(512),
             nn.LeakyReLU(),
             # nn.Dropout(p = dropout),
@@ -45,7 +50,12 @@ class CNN_Text(nn.Module):
             nn.BatchNorm1d(256),
             nn.LeakyReLU(),
             nn.Dropout(p=dropout),
-            nn.Linear(256, class_num)
+            #
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128),
+            nn.LeakyReLU(),
+            nn.Dropout(p=dropout),
+            nn.Linear(128, class_num)
         )
         #
 
