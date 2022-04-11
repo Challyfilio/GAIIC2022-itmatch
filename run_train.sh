@@ -17,4 +17,4 @@ python -u src/training/main.py \
   --workers=4 \
   --dp \
   --multigpu 0 \
-  --name "demo1"
+  --name "demo4"

@@ -147,11 +147,11 @@ def val_model(model, criterion):
 #
 if __name__ == "__main__":
     #
-    print(torch.cuda.device_count())
-    print(torch.cuda.is_available())
-    # print(device)
-    exit()
+    # print(torch.cuda.device_count())
+    # print(torch.cuda.is_available())
     word_to_idx = get_vocab('../data/word_to_idx_v1.json')
+    print(word_to_idx)
+    exit()
     model_save_dir = 'ckpt_v1/'
     print_interval = 100
     train_batch_size = 64

@@ -74,6 +74,7 @@ def train(model, data, epoch, optimizer, scaler, scheduler, args, tb_writer=None
     model.train()
 
     dataloader, sampler = data['train'].dataloader,  data['train'].sampler
+    # print(data['train'])
 
     loss_img = nn.CrossEntropyLoss()
     loss_txt = nn.CrossEntropyLoss()

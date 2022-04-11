@@ -104,6 +104,7 @@ def main_worker(gpu, ngpus_per_node, log_queue, args):
             convert_weights(model)
 
     data = get_data(args, (preprocess_train, preprocess_val))
+    # print(data)
 
     exclude = lambda n: "bn" in n or "ln" in n or "bias" in n or 'logit_scale' in n
     include = lambda n: not exclude(n)
