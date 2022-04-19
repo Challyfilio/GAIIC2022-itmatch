@@ -9,7 +9,8 @@ import os
 import glob
 from tqdm import tqdm
 from sklearn.model_selection import GroupKFold, KFold
-from net import CNN_Text
+# from net import CNN_Text
+from net_BERT import CNN_Text
 from dataset import textDataset
 import torch
 from torch.utils.data import DataLoader

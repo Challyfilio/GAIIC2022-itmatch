@@ -2,6 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
+import clip
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
 class CNN_Text(nn.Module):
@@ -17,6 +20,7 @@ class CNN_Text(nn.Module):
         self.convs = nn.ModuleList([nn.Conv2d(Ci, kernel_num, (K, embed_dim)) for K in Ks])
         self.dropout = nn.Dropout(dropout)
 
+        self.clip_model, self.preprocess = clip.load('ViT-B/32', device=device)
         #
         self.img_head = nn.Sequential(
             nn.Linear(2048, 1024),
