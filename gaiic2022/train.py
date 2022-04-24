@@ -134,6 +134,8 @@ def val_model(model, criterion):
         inputs = inputs.type(torch.LongTensor)
         labels = labels.type(torch.LongTensor)
         inputs, labels, frt = inputs.cuda(), labels.cuda(), frt.cuda().float()
+        # print(inputs.shape)
+        # print(labels.shape)
         outputs = model(inputs, frt)
         # pres_list.append(outputs.sigmoid().detach().cpu().numpy())
         # labels_list.append(labels.detach().cpu().numpy())
@@ -153,7 +155,7 @@ if __name__ == "__main__":
     word_to_idx = get_vocab('../data/word_to_idx_v1.json')
     # print(word_to_idx)
     # exit()
-    model_save_dir = 'ckpt_v3/'
+    model_save_dir = 'ckpt_4.19/'
     print_interval = 100
     train_batch_size = 64
     val_batch_size = 64

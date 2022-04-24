@@ -23,7 +23,7 @@ from transformers import BertModel, BertConfig
 
 class CNN_Text(nn.Module):
 
-    def __init__(self, embed_num, class_num=14, dropout=0.25, bert_path='bert_model'):
+    def __init__(self, embed_num, class_num=14, dropout=0.25, model_name='bert-base-chinese'):
         super(CNN_Text, self).__init__()
         embed_dim = 128
         Ci = 1
@@ -35,8 +35,8 @@ class CNN_Text(nn.Module):
         self.convs = nn.ModuleList([nn.Conv2d(Ci, kernel_num, (K, embed_dim)) for K in Ks])
 
         # Bert
-        self.config = BertConfig.from_pretrained(bert_path)
-        self.bert = BertModel.from_pretrained(bert_path)
+        self.config = BertConfig.from_pretrained(model_name)
+        self.bert = BertModel.from_pretrained(model_name)
         for param in self.bert.parameters():
             param.requires_grad = True
 
