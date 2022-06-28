@@ -20,7 +20,7 @@ class CNN_Text(nn.Module):
         self.convs = nn.ModuleList([nn.Conv2d(Ci, kernel_num, (K, embed_dim)) for K in Ks])
         self.dropout = nn.Dropout(dropout)
 
-        self.clip_model, self.preprocess = clip.load('ViT-B/32', device=device)
+        self.clip_model, self.preprocess = clip.load('ViT-B/32', device='cuda')
         #
         self.img_head = nn.Sequential(
             nn.Linear(2048, 1024),
@@ -46,7 +46,7 @@ class CNN_Text(nn.Module):
         )
         self.classify = nn.Sequential(
             #
-            nn.Linear(556, 512),
+            nn.Linear(768, 512),
             nn.BatchNorm1d(512),
             nn.LeakyReLU(),
             nn.Dropout(p=dropout),
@@ -65,22 +65,55 @@ class CNN_Text(nn.Module):
         #
 
     def forward(self, x, frt):
-        x = self.embed(x)  # (N, W, D)-batch,单词数量，维度
-        x = x.unsqueeze(1)  # (N, Ci, W, D)
-        x = [F.relu(conv(x)).squeeze(3) for conv in self.convs]  # [(N, Co, W), ...]*len(Ks)
-        x = [F.max_pool1d(i, i.size(2)).squeeze(2) for i in x]  # [(N, Co), ...]*len(Ks)
-        x = torch.cat(x, 1)
+        x.resize_(x.shape[0], 77)
+        print(x.shape)
+        x = self.clip_model.encode_text(x)
+        print(x.shape)  # 2,512
+
+        '''
+        x.resize_(x.shape[0], 77)
+        # print(x.shape)
+        x = self.clip_model.encode_text(x)
+        # print(x.shape)  # 2,512
+        # print('xxxxxxxxx')
         x_img = self.img_head(frt)
+        # print(x_img.shape)
+
+        # exit()
+        # print(x.shape)
+        # print(x.shape[0])
+
+        # exit()
+        # x = self.embed(x)  # (N, W, D)-batch,单词数量，维度
+        # print(x.shape)
+        # x = x.unsqueeze(1)  # (N, Ci, W, D)
+        # print(x.shape)
+        # x = [F.relu(conv(x)).squeeze(3) for conv in self.convs]  # [(N, Co, W), ...]*len(Ks)
+        # x = [F.max_pool1d(i, i.size(2)).squeeze(2) for i in x]  # [(N, Co), ...]*len(Ks)
+        # x = torch.cat(x, 1)
+        # print(x.shape)
+        # exit()
+
+
+
         x = torch.cat([x, x_img], axis=1)
+        # print(x.shape)
+
         #
         logit = self.classify(x)  # (N, C)
+        '''
         return logit
 
 
 if __name__ == "__main__":
     net = CNN_Text(embed_num=1000)
-    x = torch.LongTensor([[1, 2, 4, 5, 2, 35, 43, 113, 111, 451, 455, 22, 45, 55],
+    # net.cuda()
+
+    text = torch.LongTensor([[1, 2, 4, 5, 2, 35, 43, 113, 111, 451, 455, 22, 45, 55],
                           [14, 3, 12, 9, 13, 4, 51, 45, 53, 17, 57, 954, 156, 23]])
+    # x.cuda()
+    # x.to(device)
     frt = torch.randn(2, 2048)
-    logit = net(x, frt)
+    # frt.cuda()
+    logit = net(text, frt)
     print(logit.shape)
